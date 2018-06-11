@@ -183,6 +183,19 @@ class TestServer(unittest.TestCase):
         s._handle_eio_connect('456', 'environ')
         self.assertEqual(mgr.initialize.call_count, 1)
 
+    def test_handle_connect_with_200(self, eio):
+        mgr = mock.MagicMock()
+        s = server.Server(client_manager=mgr)
+        handler = mock.MagicMock(return_value=200)
+        s.on('connect', handler)
+        s._handle_eio_connect('123', 'environ')
+        handler.assert_called_once_with('123', 'environ')
+        s.manager.connect.assert_called_once_with('123', '/')
+        s.eio.send.assert_called_once_with('123', '0', binary=False)
+        self.assertEqual(mgr.initialize.call_count, 1)
+        s._handle_eio_connect('456', 'environ')
+        self.assertEqual(mgr.initialize.call_count, 1)
+
     def test_handle_connect_namespace(self, eio):
         mgr = mock.MagicMock()
         s = server.Server(client_manager=mgr)
