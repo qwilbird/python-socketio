@@ -207,6 +207,18 @@ class TestServer(unittest.TestCase):
         self.assertEqual(s.environ, {})
         s.eio.send.assert_called_once_with('123', '4', binary=False)
 
+    def test_handle_connect_rejected_fowards_error(self, eio):
+        mgr = mock.MagicMock()
+        s = server.Server(client_manager=mgr)
+        handler = mock.MagicMock(return_value=777)
+        s.on('connect', handler)
+        assert s._handle_eio_connect('123', 'environ') == 777
+        handler.assert_called_once_with('123', 'environ')
+        self.assertEqual(s.manager.connect.call_count, 1)
+        self.assertEqual(s.manager.disconnect.call_count, 1)
+        self.assertEqual(s.environ, {})
+        s.eio.send.assert_called_once_with('123', '4', binary=False)
+
     def test_handle_connect_namespace_rejected(self, eio):
         mgr = mock.MagicMock()
         s = server.Server(client_manager=mgr)

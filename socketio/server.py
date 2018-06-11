@@ -417,14 +417,14 @@ class Server(object):
         """Handle a client connection request."""
         namespace = namespace or '/'
         self.manager.connect(sid, namespace)
-        if self._trigger_event('connect', namespace, sid,
-                               self.environ[sid]) is False:
+        code = self._trigger_event('connect', namespace, sid, self.environ[sid])
+        if isinstance(code, int) and (int(code) >= 400 or code is False):
             self.manager.disconnect(sid, namespace)
             self._send_packet(sid, packet.Packet(packet.ERROR,
                                                  namespace=namespace))
             if sid in self.environ:  # pragma: no cover
                 del self.environ[sid]
-            return False
+            return code
         else:
             self._send_packet(sid, packet.Packet(packet.CONNECT,
                                                  namespace=namespace))
