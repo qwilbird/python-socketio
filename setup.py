@@ -29,7 +29,7 @@ setup(
     platforms='any',
     install_requires=[
         'six>=1.9.0',
-        'git+https://github.com/qwilbird/python-engineio.git@acb52e9787cd085be8fe29d474b36e2de413f124'
+        'python-engineio>=1.2.1'
     ],
     tests_require=[
         'mock',
